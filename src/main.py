@@ -1,11 +1,11 @@
 import json
 from pathlib import Path
 
+from database import DatabaseManager
+
 
 def load_settings():
-    config_path = Path("config/settings.json")
-
-    with open(config_path, "r", encoding="utf-8") as f:
+    with open("config/settings.json", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -15,8 +15,13 @@ def main():
 
     print("=" * 40)
     print(settings["project_name"])
-    print(f'Version {settings["version"]}')
+    print(f"Version {settings['version']}")
     print("=" * 40)
+
+    db = DatabaseManager(settings["database"])
+
+    db.initialize()
+
     print()
     print("System initialized successfully.")
 
