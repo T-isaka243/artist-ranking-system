@@ -1,0 +1,10 @@
+{
+    "project_name": "Artist Ranking System",
+    "version": "1.0.0",
+    "database": "database/ranking.db",
+    "output": {
+        "excel": "output/excel",
+        "html": "output/html",
+        "graphs": "output/graphs"
+    }
+}
