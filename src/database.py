@@ -3,70 +3,61 @@ import sqlite3
 
 
 class DatabaseManager:
-    """SQLiteデータベース管理クラス"""
+    """SQLiteデータベース管理"""
 
     def __init__(self, db_path: str):
         self.db_path = Path(db_path)
+        self.connection = None
 
-        # databaseフォルダが無ければ作成
+        # DBフォルダ作成
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
+    def connect(self):
+        """データベースへ接続"""
+        if self.connection is None:
+            self.connection = sqlite3.connect(self.db_path)
+
+    def close(self):
+        """接続を閉じる"""
+        if self.connection:
+            self.connection.close()
+            self.connection = None
+
     def initialize(self):
+        """必要なテーブルを作成"""
 
-        conn = sqlite3.connect(self.db_path)
+        self.connect()
 
-        cursor = conn.cursor()
+        cursor = self.connection.cursor()
 
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS weekly_ranking (
-
+        CREATE TABLE IF NOT EXISTS weekly_ranking(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             announce_date TEXT NOT NULL,
-
             rank INTEGER NOT NULL,
-
             artist TEXT NOT NULL,
-
             song TEXT NOT NULL,
-
             rank_point INTEGER NOT NULL,
-
             appearance_point INTEGER NOT NULL,
-
             total_point INTEGER NOT NULL
-
         )
         """)
 
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS artist_alias (
-
+        CREATE TABLE IF NOT EXISTS artist_alias(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             original_name TEXT UNIQUE,
-
             alias_name TEXT
-
         )
         """)
 
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS song_alias (
-
+        CREATE TABLE IF NOT EXISTS song_alias(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             artist TEXT,
-
             original_title TEXT,
-
             alias_title TEXT
-
         )
         """)
 
-        conn.commit()
-
-        conn.close()
-
-        print("Database initialized successfully.")
+        self.connection.commit()

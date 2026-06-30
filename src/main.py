@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 from database import DatabaseManager
 
@@ -22,8 +21,9 @@ def main():
 
     db.initialize()
 
-    print()
-    print("System initialized successfully.")
+    print("Database Ready!")
+
+    db.close()
 
 
 if __name__ == "__main__":
