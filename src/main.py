@@ -1,4 +1,5 @@
 import json
+import sys
 
 from alias_manager import AliasManager
 from database import DatabaseManager
@@ -28,14 +29,18 @@ def main():
 
     alias = AliasManager()
     
-    sample = """
-    2026-01-11
-    1,SMD,Shake My Days
-    2,TFL,TIME FOR LOVE
-    3,山下圭志,KC
-    """
+    if len(sys.argv) < 2:
+        print("使い方:")
+        print("python src/main.py data/input/2026-01-04.txt")
+        db.close()
+        return
 
-    parser.load_text(sample)
+    input_file = sys.argv[1]
+
+    with open(input_file, encoding="utf-8") as f:
+        text = f.read()
+
+    parser.load_text(text)
 
     announce_date = parser.get_announce_date()
 
