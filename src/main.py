@@ -25,12 +25,12 @@ def main():
 
     parser = RankingParser()
 
-sample = """
-2026-01-04
-1,SMD,Shake My Days
-2,TFL,TIME FOR LOVE
-3,籾井優里奈,透明な水
-"""
+    sample = """
+    2026-01-04
+    1,SMD,Shake My Days
+    2,TFL,TIME FOR LOVE
+    3,籾井優里奈,透明な水
+    """
 
     parser.load_text(sample)
 
