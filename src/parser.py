@@ -1,13 +1,33 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class RankingEntry:
+    rank: int
+    artist: str
+    song: str
+
+
 class RankingParser:
-    """ランキングデータを解析するクラス"""
 
-    def __init__(self):
-        pass
+    def parse(self, text: str):
 
-    def load_text(self, text: str):
-        """ランキングテキストを読み込む"""
-        self.text = text
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
 
-    def get_lines(self):
-        """行ごとのリストを返す"""
-        return self.text.strip().splitlines()
+        announce_date = lines[0]
+
+        rankings = []
+
+        for line in lines[1:]:
+
+            rank, artist, song = line.split(",", maxsplit=2)
+
+            rankings.append(
+                RankingEntry(
+                    rank=int(rank),
+                    artist=artist.strip(),
+                    song=song.strip()
+                )
+            )
+
+        return announce_date, rankings
