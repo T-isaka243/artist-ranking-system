@@ -1,5 +1,6 @@
 import json
 
+from alias_manager import AliasManager
 from database import DatabaseManager
 from parser import RankingParser
 from scorer import Scorer
@@ -25,10 +26,13 @@ def main():
 
     parser = RankingParser()
 
+    alias = AliasManager()
+    
     sample = """
-    2026-01-04
+    2026-01-11
     1,SMD,Shake My Days
     2,TFL,TIME FOR LOVE
+    3,山下圭志,KC
     """
 
     parser.load_text(sample)
@@ -49,7 +53,7 @@ def main():
         db.insert_weekly_ranking(
             announce_date=parser.get_announce_date(),
             rank=entry.rank,
-            artist=entry.artist,
+            artist=alias.normalize_artist(entry.artist),
             song=entry.song,
             rank_point=score.rank_point,
             appearance_point=score.appearance_point,
