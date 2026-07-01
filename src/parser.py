@@ -10,19 +10,31 @@ class RankingEntry:
 
 class RankingParser:
 
-    def parse(self, text: str):
+    def __init__(self):
+        self.text = ""
 
-        lines = [line.strip() for line in text.splitlines() if line.strip()]
+    def load_text(self, text: str):
+        self.text = text.strip()
 
-        announce_date = lines[0]
+    def get_lines(self):
+        return [
+            line.strip()
+            for line in self.text.splitlines()
+            if line.strip()
+        ]
 
-        rankings = []
+    def get_announce_date(self):
+        return self.get_lines()[0]
 
-        for line in lines[1:]:
+    def get_entries(self):
+
+        entries = []
+
+        for line in self.get_lines()[1:]:
 
             rank, artist, song = line.split(",", maxsplit=2)
 
-            rankings.append(
+            entries.append(
                 RankingEntry(
                     rank=int(rank),
                     artist=artist.strip(),
@@ -30,4 +42,4 @@ class RankingParser:
                 )
             )
 
-        return announce_date, rankings
+        return entries

@@ -3,9 +3,8 @@ from src.parser import RankingParser
 
 def test_parser():
 
-    text = """
-2026-07-01
-
+    sample = """
+2026-01-04
 1,SMD,Shake My Days
 2,TFL,TIME FOR LOVE
 3,籾井優里奈,透明な水
@@ -13,14 +12,17 @@ def test_parser():
 
     parser = RankingParser()
 
-    announce_date, rankings = parser.parse(text)
+    parser.load_text(sample)
 
-    assert announce_date == "2026-07-01"
+    assert parser.get_announce_date() == "2026-01-04"
 
-    assert len(rankings) == 3
+    entries = parser.get_entries()
 
-    assert rankings[0].rank == 1
-    assert rankings[0].artist == "SMD"
-    assert rankings[0].song == "Shake My Days"
+    assert len(entries) == 3
 
-    assert rankings[2].artist == "籾井優里奈"
+    assert entries[0].rank == 1
+    assert entries[0].artist == "SMD"
+    assert entries[0].song == "Shake My Days"
+
+    assert entries[2].artist == "籾井優里奈"
+    assert entries[2].song == "透明な水"
