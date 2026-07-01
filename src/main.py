@@ -29,10 +29,16 @@ def main():
     2026-01-04
     1,SMD,Shake My Days
     2,TFL,TIME FOR LOVE
-    3,籾井優里奈,透明な水
     """
 
     parser.load_text(sample)
+
+    announce_date = parser.get_announce_date()
+
+    if db.exists_announce_date(announce_date):
+        print(f"{announce_date} は既に登録されています。")
+        db.close()
+        return
 
     entries = parser.get_entries()
 
@@ -51,6 +57,20 @@ def main():
         )
 
     print("Import Complete!")
+
+    print("\n=== Weekly Rankings ===\n")
+
+    rankings = db.get_weekly_rankings()
+
+    current_date = ""
+
+    for announce_date, rank, artist, song in rankings:
+
+        if announce_date != current_date:
+            current_date = announce_date
+            print(current_date)
+
+        print(f"{rank:>2}  {artist:<10} {song}")
 
     db.close()
 

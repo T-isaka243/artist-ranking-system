@@ -101,3 +101,40 @@ class DatabaseManager:
         )
 
         self.connection.commit()
+
+    def get_weekly_rankings(self):
+        """週間ランキング一覧を取得"""
+
+        self.connect()
+
+        cursor = self.connection.cursor()
+
+        cursor.execute("""
+            SELECT
+                announce_date,
+                rank,
+                artist,
+                song
+            FROM weekly_ranking
+            ORDER BY announce_date, rank
+        """)
+
+        return cursor.fetchall()
+
+    def exists_announce_date(self, announce_date: str):
+        """指定日のランキングが登録済みか確認"""
+
+        self.connect()
+
+        cursor = self.connection.cursor()
+
+        cursor.execute(
+            """
+            SELECT COUNT(*)
+            FROM weekly_ranking
+            WHERE announce_date = ?
+            """,
+            (announce_date,),
+        )
+
+        return cursor.fetchone()[0] > 0
