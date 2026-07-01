@@ -27,7 +27,6 @@ class DatabaseManager:
         """必要なテーブルを作成"""
 
         self.connect()
-
         cursor = self.connection.cursor()
 
         cursor.execute("""
@@ -59,5 +58,46 @@ class DatabaseManager:
             alias_title TEXT
         )
         """)
+
+        self.connection.commit()
+
+    def insert_weekly_ranking(
+        self,
+        announce_date: str,
+        rank: int,
+        artist: str,
+        song: str,
+        rank_point: int,
+        appearance_point: int,
+        total_point: int,
+    ):
+        """週間ランキングを登録"""
+
+        self.connect()
+        cursor = self.connection.cursor()
+
+        cursor.execute(
+            """
+            INSERT INTO weekly_ranking(
+                announce_date,
+                rank,
+                artist,
+                song,
+                rank_point,
+                appearance_point,
+                total_point
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                announce_date,
+                rank,
+                artist,
+                song,
+                rank_point,
+                appearance_point,
+                total_point,
+            ),
+        )
 
         self.connection.commit()

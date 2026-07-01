@@ -2,6 +2,7 @@ import json
 
 from database import DatabaseManager
 from parser import RankingParser
+from scorer import Scorer
 
 def load_settings():
     with open("config/settings.json", encoding="utf-8") as f:
@@ -18,7 +19,6 @@ def main():
     print("=" * 40)
 
     db = DatabaseManager(settings["database"])
-
     db.initialize()
 
     print("Database Ready!")
@@ -34,10 +34,25 @@ def main():
 
     parser.load_text(sample)
 
-    print(parser.get_lines())
-    
-    db.close()
+    entries = parser.get_entries()
 
+    for entry in entries:
+
+        score = Scorer.calculate(entry.rank)
+
+        db.insert_weekly_ranking(
+            announce_date=parser.get_announce_date(),
+            rank=entry.rank,
+            artist=entry.artist,
+            song=entry.song,
+            rank_point=score.rank_point,
+            appearance_point=score.appearance_point,
+            total_point=score.total_point,
+        )
+
+    print("Import Complete!")
+
+    db.close()
 
 if __name__ == "__main__":
     main()
