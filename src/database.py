@@ -121,6 +121,26 @@ class DatabaseManager:
 
         return cursor.fetchall()
 
+    def get_artist_ranking(self):
+        """アーティストランキングを取得"""
+
+        self.connect()
+
+        cursor = self.connection.cursor()
+
+        cursor.execute("""
+            SELECT
+                artist,
+                SUM(total_point) AS total_points,
+                COUNT(*) AS appearances,
+                MIN(rank) AS best_rank
+            FROM weekly_ranking
+            GROUP BY artist
+            ORDER BY total_points DESC
+        """)
+
+        return cursor.fetchall()
+
     def exists_announce_date(self, announce_date: str):
         """指定日のランキングが登録済みか確認"""
 

@@ -1,6 +1,7 @@
 import json
 import sys
 
+from exporter import Exporter
 from alias_manager import AliasManager
 from database import DatabaseManager
 from parser import RankingParser
@@ -46,26 +47,27 @@ def main():
 
     if db.exists_announce_date(announce_date):
         print(f"{announce_date} は既に登録されています。")
-        db.close()
-        return
+    else:
 
-    entries = parser.get_entries()
+        entries = parser.get_entries()
 
-    for entry in entries:
+        for entry in entries:
 
-        score = Scorer.calculate(entry.rank)
+            score = Scorer.calculate(entry.rank)
+            artist = alias.normalize_artist(entry.artist)
+            song = alias.normalize_song(artist, entry.song)
+        
+            db.insert_weekly_ranking(
+                announce_date=announce_date,
+                rank=entry.rank,
+                artist=artist,
+                song=song,
+                rank_point=score.rank_point,
+                appearance_point=score.appearance_point,
+                total_point=score.total_point,
+            )
 
-        db.insert_weekly_ranking(
-            announce_date=parser.get_announce_date(),
-            rank=entry.rank,
-            artist=alias.normalize_artist(entry.artist),
-            song=entry.song,
-            rank_point=score.rank_point,
-            appearance_point=score.appearance_point,
-            total_point=score.total_point,
-        )
-
-    print("Import Complete!")
+        print("Import Complete!")
 
     print("\n=== Weekly Rankings ===\n")
 
@@ -81,7 +83,22 @@ def main():
 
         print(f"{rank:>2}  {artist:<10} {song}")
 
+    print("\n=== Artist Ranking ===\n")
+
+    artist_rankings = db.get_artist_ranking()
+
+    for index, (artist, total_points, appearances, best_rank) in enumerate(artist_rankings, start=1):
+        print(
+            f"{index:>2}. "
+            f"{artist:<15} "
+            f"{total_points:>5} pt   "
+            f"{appearances:>2}回   "
+            f"最高順位 {best_rank}"
+        )
     db.close()
+
+    exporter = Exporter()
+    exporter.export_artist_ranking(artist_rankings)
 
 if __name__ == "__main__":
     main()
